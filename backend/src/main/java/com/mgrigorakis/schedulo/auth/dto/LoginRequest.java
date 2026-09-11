@@ -9,8 +9,11 @@ public record LoginRequest(
         @Email
         String email,
 
-        @NotBlank
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$")
+        @NotBlank(message = "Password is required")
+        @Pattern(
+                regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$",
+                message = "Password must be 8-20 characters and include uppercase, lowercase, number and special character"
+        )
         String password
 ) {
 }
