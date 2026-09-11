@@ -1,8 +1,8 @@
 package com.mgrigorakis.schedulo.auth.service;
 
+import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
 import com.mgrigorakis.schedulo.auth.model.UserInfoDetails;
 import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
-import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
 import com.mgrigorakis.schedulo.security.jwt.JwtService;
 import com.mgrigorakis.schedulo.users.model.PlatformRole;
@@ -35,7 +35,6 @@ public class AuthServiceImpl implements AuthService {
 
         UserInfoDetails user = (UserInfoDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(user.getId(), user.getAuthorities().iterator().next().getAuthority());
-
         return new LoginResponse(token);
     }
 

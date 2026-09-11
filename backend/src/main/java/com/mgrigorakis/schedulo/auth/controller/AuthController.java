@@ -4,6 +4,7 @@ import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
 import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
 import com.mgrigorakis.schedulo.auth.service.AuthService;
+import com.mgrigorakis.schedulo.common.dto.ApiResponseWrapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody @Valid LoginRequest request) {
-        return authService.login(request);
+    public ApiResponseWrapper<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
+        return new ApiResponseWrapper<>(authService.login(request));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
