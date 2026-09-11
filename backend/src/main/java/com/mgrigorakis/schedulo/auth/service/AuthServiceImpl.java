@@ -1,6 +1,7 @@
 package com.mgrigorakis.schedulo.auth.service;
 
 import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
+import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
 import com.mgrigorakis.schedulo.auth.model.UserInfoDetails;
 import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PlatformRoleRepository platformRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthMapper authMapper;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -48,14 +50,7 @@ public class AuthServiceImpl implements AuthService {
 
         String hashedPassword = passwordEncoder.encode(request.password());
 
-        // TODO: Use mapper instead
-        User user = User.builder()
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .email(request.email())
-                .password(hashedPassword)
-                .phone(request.phone())
-                .build();
+        User user = authMapper.toUserFromRegistration(request, hashedPassword);
 
         PlatformRole role = platformRoleRepository.findByName("USER").orElseThrow(() -> {
             log.error("Default platform role USER not found during user registration");
