@@ -4,6 +4,8 @@ import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
 import com.mgrigorakis.schedulo.auth.model.UserInfoDetails;
 import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
+import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
+import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
 import com.mgrigorakis.schedulo.security.jwt.JwtService;
 import com.mgrigorakis.schedulo.users.model.PlatformRole;
 import com.mgrigorakis.schedulo.users.model.User;
@@ -14,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +41,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void registration(RegistrationRequest request) {
-        // TODO: Replace with a custom exception
-        //  and a generic message to not expose existing mails in DB
         userRepository.findByEmail(request.email()).ifPresent(user -> {
-            log.warn("User with email {} already exists", request.email());
-            throw new UsernameNotFoundException("Username already exists");
+            log.warn("Registration attempted with an existing email");
+            throw new UserAlreadyExistsException();
         });
 
         String hashedPassword = passwordEncoder.encode(request.password());
@@ -58,9 +57,10 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.phone())
                 .build();
 
-        // TODO: Replace exception with custom exception
-        PlatformRole role = platformRoleRepository.findByName("USER").orElseThrow(
-                () -> new RuntimeException("Default Role not found"));
+        PlatformRole role = platformRoleRepository.findByName("USER").orElseThrow(() -> {
+            log.error("Default platform role USER not found during user registration");
+            return new DefaultPlatformRoleNotFound("USER");
+        });
 
         user.setPlatformRole(role);
         userRepository.save(user);
