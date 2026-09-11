@@ -20,3 +20,6 @@ spring:
     user:
       name: ${SPRING_SECURITY_USERNAME}
       password: ${SPRING_SECURITY_PASSWORD}
+    jwt:
+      secret: ${SPRING_SECURITY_JWT_SECRET}
+      expiration-in-ms: 3600000 # 1h
