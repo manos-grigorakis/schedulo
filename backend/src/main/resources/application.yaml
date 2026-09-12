@@ -23,3 +23,14 @@ spring:
     jwt:
       secret: ${SPRING_SECURITY_JWT_SECRET}
       expiration-in-ms: 3600000 # 1h
+    oauth2:
+      client:
+        registration:
+          google:
+            provider: google
+            client-id: ${SPRING_SECURITY_OAUTH_GOOGLE_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH_GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email

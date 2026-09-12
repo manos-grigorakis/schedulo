@@ -8,6 +8,7 @@ import com.mgrigorakis.schedulo.common.dto.ApiResponseWrapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -25,5 +26,10 @@ public class AuthController {
     @PostMapping("/registration")
     public void registration(@RequestBody @Valid RegistrationRequest request) {
         authService.registration(request);
+    }
+
+    @GetMapping("/protected")
+    public ResponseEntity<?> protectedResource() {
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,7 @@
 package com.mgrigorakis.schedulo.security.config;
 
+import com.mgrigorakis.schedulo.security.service.CustomOidcUserService;
+import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationSuccessHandler;
 import com.mgrigorakis.schedulo.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,17 +28,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final CustomOidcUserService customOidcUserService;
+    private final OauthAuthenticationSuccessHandler oauthAuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 // Disable CSRF due to stateless session for JWT
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-                    auth
-                            .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                            .anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
 
                 // Stateless session for JWT
                 .sessionManagement(session ->
@@ -46,6 +50,13 @@ public class SecurityConfig {
 
                 // JWT filter before Spring Security default filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // OAuth2 Login
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfo) -> userInfo.oidcUserService(customOidcUserService))
+                        .successHandler(oauthAuthenticationSuccessHandler)
+                )
+                .formLogin(Customizer.withDefaults())
                 .build();
     }
 
