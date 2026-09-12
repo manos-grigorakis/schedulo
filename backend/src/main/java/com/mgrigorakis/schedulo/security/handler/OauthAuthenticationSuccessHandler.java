@@ -1,6 +1,6 @@
 package com.mgrigorakis.schedulo.security.handler;
 
-import com.mgrigorakis.schedulo.security.jwt.JwtService;
+import com.mgrigorakis.schedulo.security.service.JwtService;
 import com.mgrigorakis.schedulo.users.enums.OauthProvider;
 import com.mgrigorakis.schedulo.users.model.OauthAccount;
 import com.mgrigorakis.schedulo.users.model.User;

@@ -7,7 +7,7 @@ import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
 import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
 import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
-import com.mgrigorakis.schedulo.security.jwt.JwtService;
+import com.mgrigorakis.schedulo.security.service.JwtService;
 import com.mgrigorakis.schedulo.users.model.PlatformRole;
 import com.mgrigorakis.schedulo.users.model.User;
 import com.mgrigorakis.schedulo.users.repository.PlatformRoleRepository;

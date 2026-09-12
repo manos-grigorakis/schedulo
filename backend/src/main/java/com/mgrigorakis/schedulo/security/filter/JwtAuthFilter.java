@@ -1,5 +1,6 @@
-package com.mgrigorakis.schedulo.security.jwt;
+package com.mgrigorakis.schedulo.security.filter;
 
+import com.mgrigorakis.schedulo.security.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;

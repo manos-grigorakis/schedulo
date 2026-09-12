@@ -1,4 +1,4 @@
-package com.mgrigorakis.schedulo.security.jwt;
+package com.mgrigorakis.schedulo.security.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -2,7 +2,7 @@ package com.mgrigorakis.schedulo.security.config;
 
 import com.mgrigorakis.schedulo.security.service.CustomOidcUserService;
 import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationSuccessHandler;
-import com.mgrigorakis.schedulo.security.jwt.JwtAuthFilter;
+import com.mgrigorakis.schedulo.security.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
