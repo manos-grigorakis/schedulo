@@ -48,9 +48,4 @@ public class AuthController {
     public void registration(@RequestBody @Valid RegistrationRequest request) {
         authService.registration(request);
     }
-
-    @GetMapping("/protected")
-    public ResponseEntity<?> protectedResource() {
-        return ResponseEntity.ok().build();
-    }
 }
