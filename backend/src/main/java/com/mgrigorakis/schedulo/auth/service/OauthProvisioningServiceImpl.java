@@ -2,6 +2,7 @@ package com.mgrigorakis.schedulo.auth.service;
 
 import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
 import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
+import com.mgrigorakis.schedulo.common.exception.MissingOauthUserAttributeException;
 import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
 import com.mgrigorakis.schedulo.users.enums.OauthProvider;
 import com.mgrigorakis.schedulo.users.model.OauthAccount;
@@ -27,8 +28,8 @@ public class OauthProvisioningServiceImpl implements OauthProvisioningService {
 
     @Transactional
     @Override
-    public void provisionIfNecessary(OidcUser oidcUser) {
-        if (oauthAccountRepository.existsByProviderAndExternalSubject(OauthProvider.GOOGLE, oidcUser.getSubject())) {
+    public void provisionIfNecessary(OidcUser oidcUser, OauthProvider provider) {
+        if (oauthAccountRepository.existsByProviderAndExternalSubject(provider, oidcUser.getSubject())) {
             return;
         }
 
@@ -43,15 +44,41 @@ public class OauthProvisioningServiceImpl implements OauthProvisioningService {
             return new DefaultPlatformRoleNotFound("USER");
         });
 
-        User user = authMapper.toUserFromOidcUser(oidcUser);
+        User user = createUser(oidcUser, provider);
         user.setPlatformRole(role);
         userRepository.save(user);
 
         OauthAccount oauthAccount = OauthAccount.builder()
                 .user(user)
-                .provider(OauthProvider.GOOGLE)
+                .provider(provider)
                 .externalSubject(oidcUser.getSubject())
                 .build();
         oauthAccountRepository.save(oauthAccount);
     }
+
+    private User createUser(OidcUser oidcUser, OauthProvider provider) {
+        return switch (provider) {
+            case GOOGLE -> createGoogleUser(oidcUser);
+            case MICROSOFT -> createMicrosoftUser(oidcUser);
+        };
+    }
+
+    private User createGoogleUser(OidcUser oidcUser) {
+        return authMapper.toUserFromOidcUser(oidcUser);
+    }
+
+    private User createMicrosoftUser(OidcUser oidcUser) {
+        String fullName = oidcUser.getClaimAsString("name");
+
+        if (fullName == null) {
+            throw new MissingOauthUserAttributeException(OauthProvider.MICROSOFT.name(), "name");
+        }
+
+        String[] nameParts = fullName.split(" ", 2);
+        return User.builder()
+                .firstName(nameParts[0])
+                .lastName(nameParts[1])
+                .email(oidcUser.getEmail())
+                .build();
+     }
 }
