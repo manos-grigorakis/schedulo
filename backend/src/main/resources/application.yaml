@@ -23,6 +23,7 @@ spring:
     jwt:
       secret: ${SPRING_SECURITY_JWT_SECRET}
       expiration-in-ms: 3600000 # 1h
+      cookie-name: access_token
     oauth2:
       client:
         registration:

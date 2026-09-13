@@ -1,6 +1,5 @@
 package com.mgrigorakis.schedulo.auth.service;
 
-import com.mgrigorakis.schedulo.auth.dto.LoginResponse;
 import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
 import com.mgrigorakis.schedulo.auth.model.UserInfoDetails;
 import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
@@ -32,13 +31,12 @@ public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public String login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         UserInfoDetails user = (UserInfoDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(user.getId(), user.getAuthorities().iterator().next().getAuthority());
-        return new LoginResponse(token);
+        return jwtService.generateToken(user.getId(), user.getAuthorities().iterator().next().getAuthority());
     }
 
     @Override
