@@ -1,0 +1,61 @@
+package com.mgrigorakis.schedulo.auth.service;
+
+import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
+import com.mgrigorakis.schedulo.auth.model.UserInfoDetails;
+import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
+import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
+import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
+import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
+import com.mgrigorakis.schedulo.security.service.JwtService;
+import com.mgrigorakis.schedulo.users.model.PlatformRole;
+import com.mgrigorakis.schedulo.users.model.User;
+import com.mgrigorakis.schedulo.users.repository.PlatformRoleRepository;
+import com.mgrigorakis.schedulo.users.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class AuthServiceImpl implements AuthService {
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PlatformRoleRepository platformRoleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthMapper authMapper;
+
+    @Override
+    public String login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+
+        UserInfoDetails user = (UserInfoDetails) authentication.getPrincipal();
+        return jwtService.generateToken(user.getId(), user.getAuthorities().iterator().next().getAuthority());
+    }
+
+    @Override
+    public void registration(RegistrationRequest request) {
+        userRepository.findByEmail(request.email()).ifPresent(user -> {
+            log.warn("Registration attempted with an existing email");
+            throw new UserAlreadyExistsException();
+        });
+
+        String hashedPassword = passwordEncoder.encode(request.password());
+
+        User user = authMapper.toUserFromRegistration(request, hashedPassword);
+
+        PlatformRole role = platformRoleRepository.findByName("USER").orElseThrow(() -> {
+            log.error("Default platform role USER not found during user registration");
+            return new DefaultPlatformRoleNotFound("USER");
+        });
+
+        user.setPlatformRole(role);
+        userRepository.save(user);
+    }
+}

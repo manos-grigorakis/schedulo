@@ -3,3 +3,7 @@ spring:
     activate:
       on-profile: dev
 
+  security:
+    jwt:
+      expiration-in-ms: 86400000 # 24h
+
