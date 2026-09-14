@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthContent from "../_components/auth-content";
 import MainButton from "@/components/ui/main-button";
@@ -27,6 +27,8 @@ export default function Login() {
     resolver: zodResolver(schema),
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const oauthError = searchParams.get("error");
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -79,6 +81,12 @@ export default function Login() {
         {errors.root?.message && (
           <div className="px-3 py-2 text-sm font-medium text-red-500 border border-red-200 rounded-lg bg-red-50">
             {errors.root.message}
+          </div>
+        )}
+
+        {oauthError && (
+          <div className="px-3 py-2 text-sm font-medium text-red-500 border border-red-200 rounded-lg bg-red-50">
+            Something went wrong. Please try again
           </div>
         )}
 
