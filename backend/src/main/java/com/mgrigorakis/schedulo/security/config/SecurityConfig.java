@@ -1,5 +1,6 @@
 package com.mgrigorakis.schedulo.security.config;
 
+import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationFailureHandler;
 import com.mgrigorakis.schedulo.security.service.CustomOidcUserService;
 import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationSuccessHandler;
 import com.mgrigorakis.schedulo.security.filter.JwtAuthFilter;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CustomOidcUserService customOidcUserService;
     private final OauthAuthenticationSuccessHandler oauthAuthenticationSuccessHandler;
+    private final OauthAuthenticationFailureHandler oauthAuthenticationFailureHandler;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
@@ -65,8 +67,8 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfo) -> userInfo.oidcUserService(customOidcUserService))
                         .successHandler(oauthAuthenticationSuccessHandler)
+                        .failureHandler(oauthAuthenticationFailureHandler)
                 )
-                .formLogin(Customizer.withDefaults())
                 .build();
     }
 
