@@ -3,7 +3,6 @@ package com.mgrigorakis.schedulo.auth.controller;
 import com.mgrigorakis.schedulo.auth.dto.LoginRequest;
 import com.mgrigorakis.schedulo.auth.dto.RegistrationRequest;
 import com.mgrigorakis.schedulo.auth.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -28,8 +26,9 @@ public class AuthController {
     @Value("${spring.security.jwt.expiration-in-ms}")
     private Long jwtExpirationInMs;
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
+    public void login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
         String token = authService.login(request);
 
         ResponseCookie cookie = ResponseCookie.from(cookieName, token)
@@ -41,7 +40,6 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok().build();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,8 +48,9 @@ public class AuthController {
         authService.registration(request);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public void logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(cookieName, "")
                 .httpOnly(true)
                 .secure(true)
@@ -61,6 +60,5 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok().build();
     }
 }
