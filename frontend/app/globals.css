@@ -32,6 +32,7 @@
   --font-sans: var(--font-plus-jakarta-sans);
   --font-mono:
     ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-serif: var(--font-instrument-serif);
 }
 
 body {

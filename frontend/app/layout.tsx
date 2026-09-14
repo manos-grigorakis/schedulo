@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plut-jakarta-sans",
   subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -16,9 +22,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${instrumentSerif.variable} h-full antialiased selection:bg-primary-500 selection:text-white`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex flex-col min-h-full">{children}</body>
     </html>
   );
 }
