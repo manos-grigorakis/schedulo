@@ -24,7 +24,7 @@ export default function MainInput({
         type={type}
         id={id}
         placeholder={placeholder}
-        className="bg-white py-2 text-sm rounded-lg focus:outline-1 outline-primary-500 shadow-xs w-full px-2 border border-[#ccc]"
+        className="bg-white py-2 text-sm rounded-lg focus:outline-1 outline-primary-500 shadow-xs w-full px-2 border border-neutral-200"
       />
 
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}

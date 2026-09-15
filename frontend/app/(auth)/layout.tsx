@@ -13,7 +13,7 @@ export default function AuthLayout({
           {children}
         </div>
 
-        <div className="hidden lg:block bg-primary-100 border-l border-[#ccc] p-4">
+        <div className="hidden lg:block bg-primary-100 border-l border-neutral-200 p-4">
           <MarketingPanel />
         </div>
       </div>
