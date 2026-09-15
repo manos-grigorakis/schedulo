@@ -78,8 +78,12 @@ public class Business {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void buildSlug() {
-        String normalizedName = name.toLowerCase().replace(" ", "-");
-        this.slug = normalizedName + "-"  + city.toLowerCase();
+    /**
+     * Builds the slug of the business based on the name and city
+     *
+     * @return The generated business slug
+     */
+    public String buildSlug() {
+        return name.toLowerCase().replace(" ", "-") + "-" + city.toLowerCase();
     }
 }
