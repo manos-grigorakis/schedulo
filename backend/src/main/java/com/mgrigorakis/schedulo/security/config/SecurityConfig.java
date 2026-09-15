@@ -49,7 +49,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        // Authentication
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+
+                        // Businesses
+                        .requestMatchers(HttpMethod.GET, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/businesses").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
 
