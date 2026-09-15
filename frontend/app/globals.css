@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf9fb;
+  --foreground: #17151c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Primary */
+  --color-primary-50: #f4f0fe;
+  --color-primary-100: #efeafe;
+  --color-primary-200: #e9e5f8;
+  --color-primary-500: #6842e0;
+  --color-primary-600: #5a37d2;
+  --color-primary-700: #4b2ecb;
+  --color-primary-900: #2f215e;
+
+  /* Neutral */
+  --color-neutral-50: #fcfbfd;
+  --color-neutral-100: #f1eff4;
+  --color-neutral-200: #cccccc;
+  --color-neutral-300: #a9a5b1;
+  --color-neutral-400: #8d8895;
+  --color-neutral-500: #6b6674;
+  --color-neutral-900: #17151c;
+
+  --color-muted: #8d8895;
+
+  /* Typography */
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-mono:
+    ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-serif: var(--font-instrument-serif);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }

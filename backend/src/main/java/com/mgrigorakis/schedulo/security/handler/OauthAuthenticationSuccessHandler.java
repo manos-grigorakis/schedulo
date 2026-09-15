@@ -33,6 +33,9 @@ public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessH
     @Value("${spring.security.jwt.expiration-in-ms}")
     private Long jwtExpirationInMs;
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -55,6 +58,7 @@ public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessH
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.sendRedirect(frontendUrl + "/oauth/callback");
     }
 
     private OauthProvider getOauthProvider(OAuth2AuthenticationToken oauthToken) {

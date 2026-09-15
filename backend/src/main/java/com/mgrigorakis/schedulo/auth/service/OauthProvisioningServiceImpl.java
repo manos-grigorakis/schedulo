@@ -3,7 +3,7 @@ package com.mgrigorakis.schedulo.auth.service;
 import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
 import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
 import com.mgrigorakis.schedulo.common.exception.MissingOauthUserAttributeException;
-import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
+import com.mgrigorakis.schedulo.common.exception.OauthUserAlreadyExistsException;
 import com.mgrigorakis.schedulo.users.enums.OauthProvider;
 import com.mgrigorakis.schedulo.users.model.OauthAccount;
 import com.mgrigorakis.schedulo.users.model.PlatformRole;
@@ -36,7 +36,7 @@ public class OauthProvisioningServiceImpl implements OauthProvisioningService {
         if (userRepository.existsByEmail(oidcUser.getEmail())) {
             // Account exists but is not linked with the provider
             log.warn("Registration attempted with an existing email");
-            throw new UserAlreadyExistsException();
+            throw new OauthUserAlreadyExistsException();
         }
 
         PlatformRole role = platformRoleRepository.findByName("USER").orElseThrow(() -> {
