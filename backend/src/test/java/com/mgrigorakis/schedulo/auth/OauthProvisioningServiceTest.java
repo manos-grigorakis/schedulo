@@ -3,6 +3,7 @@ package com.mgrigorakis.schedulo.auth;
 import com.mgrigorakis.schedulo.auth.mapper.AuthMapper;
 import com.mgrigorakis.schedulo.auth.service.OauthProvisioningServiceImpl;
 import com.mgrigorakis.schedulo.common.exception.DefaultPlatformRoleNotFound;
+import com.mgrigorakis.schedulo.common.exception.OauthUserAlreadyExistsException;
 import com.mgrigorakis.schedulo.common.exception.UserAlreadyExistsException;
 import com.mgrigorakis.schedulo.users.enums.OauthProvider;
 import com.mgrigorakis.schedulo.users.model.OauthAccount;
@@ -92,7 +93,7 @@ public class OauthProvisioningServiceTest {
     }
 
     @Test
-    void provisioning_shouldThrowUserAlreadyExistsException_whenEmailAlreadyExists() {
+    void provisioning_shouldThrowOauthUserAlreadyExistsException_whenEmailAlreadyExists() {
         // Arrange
         OidcUser oidcUser = mock(OidcUser.class);
         when(oidcUser.getSubject()).thenReturn("random-sub");
@@ -104,7 +105,7 @@ public class OauthProvisioningServiceTest {
 
 
         // Act & Assert
-        assertThrows(UserAlreadyExistsException.class, () ->
+        assertThrows(OauthUserAlreadyExistsException.class, () ->
                 oauthProvisioningService.provisionIfNecessary(oidcUser, OauthProvider.GOOGLE));
         verify(userRepository, never()).save(any());
         verify(oauthAccountRepository, never()).save(any());
