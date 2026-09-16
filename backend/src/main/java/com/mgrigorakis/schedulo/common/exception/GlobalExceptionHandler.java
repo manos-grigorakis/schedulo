@@ -85,6 +85,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.NOT_FOUND);
     }
 
+    // Duplicate Entry - 409
+    @ExceptionHandler(DuplicateEntryException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleDuplicateEntryException(DuplicateEntryException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exc.getMessage(),
+                null
+        );
+        
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.CONFLICT);
+    }
+
     // User already exists - 409
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiResponseWrapper<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException exc) {
