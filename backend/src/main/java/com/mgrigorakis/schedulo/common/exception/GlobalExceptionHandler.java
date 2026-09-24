@@ -61,6 +61,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.UNAUTHORIZED);
     }
 
+    // Authentication Credentials Not Found - 401
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                exc.getMessage(),
+                null,
+                null
+        );
+
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.UNAUTHORIZED);
+    }
+
     // Forbidden - 403
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponseWrapper<Void>> handleAccessDeniedException(AccessDeniedException exc) {
