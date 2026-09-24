@@ -36,6 +36,13 @@ public class BusinessMember {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Builder
+    public BusinessMember(User user, Business business, BusinessRole businessRole) {
+        this.user = user;
+        this.business = business;
+        this.businessRole = businessRole;
+    }
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

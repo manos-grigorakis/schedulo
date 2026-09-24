@@ -1,10 +1,15 @@
 package com.mgrigorakis.schedulo.business.service;
 
+import com.mgrigorakis.schedulo.auth.service.CurrentUser;
 import com.mgrigorakis.schedulo.business.dto.BusinessRequest;
 import com.mgrigorakis.schedulo.business.dto.BusinessResponse;
 import com.mgrigorakis.schedulo.business.mapper.BusinessMapper;
 import com.mgrigorakis.schedulo.business.model.Business;
+import com.mgrigorakis.schedulo.business.model.BusinessMember;
+import com.mgrigorakis.schedulo.business.model.BusinessRole;
+import com.mgrigorakis.schedulo.business.repository.BusinessMemberRepository;
 import com.mgrigorakis.schedulo.business.repository.BusinessRepository;
+import com.mgrigorakis.schedulo.business.repository.BusinessRoleRepository;
 import com.mgrigorakis.schedulo.common.exception.BadRequestException;
 import com.mgrigorakis.schedulo.common.exception.ResourceNotFoundException;
 import com.mgrigorakis.schedulo.infrastructure.storage.S3StorageService;
@@ -12,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,8 +29,11 @@ import java.util.UUID;
 @Service
 public class BusinessServiceImpl implements BusinessService {
     private final BusinessRepository businessRepository;
+    private final BusinessMemberRepository businessMemberRepository;
+    private final BusinessRoleRepository businessRoleRepository;
     private final BusinessMapper businessMapper;
     private final S3StorageService s3StorageService;
+    private final CurrentUser currentUser;
 
     private static final List<String> ALLOWED_LOGO_CONTENT_TYPES = List.of("image/jpeg", "image/png", "image/svg+xml");
 
@@ -46,6 +55,7 @@ public class BusinessServiceImpl implements BusinessService {
         return toResponse(business);
     }
 
+    @Transactional
     @Override
     public BusinessResponse createBusiness(BusinessRequest request) {
         Business business = businessMapper.toBusiness(request);
@@ -60,6 +70,8 @@ public class BusinessServiceImpl implements BusinessService {
 
         businessRepository.save(business);
         log.info("Business created with id {}", business.getId());
+
+        createOwnerMembership(business);
 
         return toResponse(business);
     }
@@ -143,6 +155,27 @@ public class BusinessServiceImpl implements BusinessService {
                 ? s3StorageService.generatePresignedUrl(business.getLogoKey()) : null;
 
         return businessMapper.toResponse(business, logoUrl);
+    }
+
+    /**
+     * Creates an owner membership between the authenticated user and the provided business
+     *
+     * @param business The business that the owner membership is created
+     */
+    private void createOwnerMembership(Business business) {
+        BusinessRole businessRole = businessRoleRepository.findByName("OWNER").orElseThrow(() -> {
+            log.warn("Business Role not found with name OWNER");
+            return new ResourceNotFoundException("Business Role not found with name OWNER");
+        });
+
+        BusinessMember member = BusinessMember.builder()
+                .user(currentUser.getCurrentUser())
+                .business(business)
+                .businessRole(businessRole)
+                .build();
+
+        businessMemberRepository.save(member);
+        log.info("Business member created with id {}", member.getId());
     }
 }
 
