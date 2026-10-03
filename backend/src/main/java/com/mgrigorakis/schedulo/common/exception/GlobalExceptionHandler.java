@@ -2,6 +2,7 @@ package com.mgrigorakis.schedulo.common.exception;
 
 import com.mgrigorakis.schedulo.common.dto.ApiResponseWrapper;
 import com.mgrigorakis.schedulo.common.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +14,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // Field validation error - 400
@@ -33,6 +35,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.BAD_REQUEST);
     }
 
+    // Bad Request - 400
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleBadRequestException(BadRequestException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                exc.getMessage(),
+                exc.getErrorCode(),
+                null
+        );
+
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.BAD_REQUEST);
+    }
+
     // Bad credentials - 401
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponseWrapper<Void>> handleBadCredentialsException(BadCredentialsException exc) {
@@ -40,6 +55,19 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED.value(),
                 "Invalid email or password",
                 "INVALID_CREDENTIALS",
+                null
+        );
+
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.UNAUTHORIZED);
+    }
+
+    // Authentication Credentials Not Found - 401
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                exc.getMessage(),
+                null,
                 null
         );
 
@@ -56,6 +84,30 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.FORBIDDEN);
+    }
+
+    // Not Found - 404
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleResourceNotFoundException(ResourceNotFoundException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                exc.getMessage(),
+                null
+        );
+
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.NOT_FOUND);
+    }
+
+    // Duplicate Entry - 409
+    @ExceptionHandler(DuplicateEntryException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleDuplicateEntryException(DuplicateEntryException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exc.getMessage(),
+                null
+        );
+        
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.CONFLICT);
     }
 
     // User already exists - 409
@@ -80,6 +132,19 @@ public class GlobalExceptionHandler {
                 null
         );
 
+        log.error("An unexpected error occurred", exc);
         return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Storage Service Exception - 503
+    @ExceptionHandler(StorageServiceException.class)
+    public ResponseEntity<ApiResponseWrapper<Void>> handleStorageServiceException(StorageServiceException exc) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                exc.getMessage(),
+                null
+        );
+
+        return new ResponseEntity<>(new ApiResponseWrapper<>(response), HttpStatus.SERVICE_UNAVAILABLE);
     }
 }

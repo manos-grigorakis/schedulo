@@ -4,6 +4,7 @@ import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationFailureHandl
 import com.mgrigorakis.schedulo.security.service.CustomOidcUserService;
 import com.mgrigorakis.schedulo.security.handler.OauthAuthenticationSuccessHandler;
 import com.mgrigorakis.schedulo.security.filter.JwtAuthFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -49,9 +50,28 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        // Authentication
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+
+                        // Businesses
+                        .requestMatchers(HttpMethod.GET, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/businesses").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/businesses/*").hasAnyAuthority("USER", "ADMIN")
+
+                        // Business Role
+                        .requestMatchers(HttpMethod.GET, "/api/business-roles/*").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/business-roles").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/business-roles/*").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/business-roles/*").hasAuthority("ADMIN")
+
                         .anyRequest().authenticated()
                 )
+
+                // Exception handling for unauthorized requests
+                .exceptionHandling(exc -> exc.authenticationEntryPoint(
+                        (request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
 
                 // Stateless session for JWT
                 .sessionManagement(session ->

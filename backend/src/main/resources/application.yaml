@@ -54,3 +54,12 @@ spring:
 app:
   frontend:
     url: ${FRONTEND_URL}
+  aws:
+    s3:
+      region: ${AWS_S3_REGION}
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}
+      internal-endpoint: ${AWS_S3_ENDPOINT}
+      public-endpoint: ${AWS_S3_PUBLIC_ENDPOINT}
+      bucket-name: ${AWS_S3_BUCKET_NAME}
+      bucket-path-businesses: businesses/
