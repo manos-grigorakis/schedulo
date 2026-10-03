@@ -71,7 +71,7 @@ public class BusinessRoleServiceImpl implements BusinessRoleService {
     }
 
     @Override
-    public void deleteBusinessRoleById(Long id) {
+    public void deleteBusinessRoleById(Long id)     {
         BusinessRole businessRole = businessRoleRepository.findById(id).orElseThrow(() -> {
             log.warn("BusinessRole with id {} not found", id);
             return new ResourceNotFoundException("BusinessRole with id " + id + " not found");
